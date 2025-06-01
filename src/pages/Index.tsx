@@ -22,10 +22,13 @@ import {
   Filter
 } from "lucide-react";
 import { toast } from "sonner";
+import { useChallenges } from "@/hooks/useChallenges";
+import { ChallengeCard } from "@/components/ChallengeCard";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("discover");
   const [userType, setUserType] = useState<"creator" | "company" | null>(null);
+  const { data: challenges, isLoading, error } = useChallenges();
 
   const featuredChallenges = [
     {
@@ -215,60 +218,80 @@ const Index = () => {
               </Button>
             </div>
 
+            {isLoading && (
+              <div className="text-center py-8">
+                <p className="text-gray-600">Challenges werden geladen...</p>
+              </div>
+            )}
+
+            {error && (
+              <div className="text-center py-8">
+                <p className="text-red-600">Fehler beim Laden der Challenges</p>
+                <p className="text-sm text-gray-500 mt-2">Zeige Mock-Daten als Fallback</p>
+              </div>
+            )}
+
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {featuredChallenges.map((challenge) => (
-                <Card key={challenge.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarFallback className="bg-gradient-to-r from-purple-500 to-blue-500 text-white">
-                            {challenge.logo}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <CardTitle className="text-lg">{challenge.title}</CardTitle>
-                          <CardDescription>{challenge.company}</CardDescription>
+              {challenges && challenges.length > 0 ? (
+                challenges.map((challenge) => (
+                  <ChallengeCard key={challenge.id} challenge={challenge} />
+                ))
+              ) : (
+                // Fallback zu Mock-Daten wenn keine echten Challenges vorhanden
+                featuredChallenges.map((challenge) => (
+                  <Card key={challenge.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="h-10 w-10">
+                            <AvatarFallback className="bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+                              {challenge.logo}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <CardTitle className="text-lg">{challenge.title}</CardTitle>
+                            <CardDescription>{challenge.company}</CardDescription>
+                          </div>
+                        </div>
+                        <Badge className="bg-green-100 text-green-800">{challenge.platform}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="flex items-center space-x-2">
+                          <DollarSign className="h-4 w-4 text-green-600" />
+                          <span className="font-semibold">{challenge.prize}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="h-4 w-4 text-blue-600" />
+                          <span>{challenge.deadline}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Users className="h-4 w-4 text-purple-600" />
+                          <span>{challenge.participants} Teilnehmer</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Eye className="h-4 w-4 text-orange-600" />
+                          <span>{challenge.engagement}</span>
                         </div>
                       </div>
-                      <Badge className="bg-green-100 text-green-800">{challenge.platform}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="flex items-center space-x-2">
-                        <DollarSign className="h-4 w-4 text-green-600" />
-                        <span className="font-semibold">{challenge.prize}</span>
+                      <div className="flex items-center justify-between">
+                        <Badge variant="outline">{challenge.category}</Badge>
+                        <Badge variant={challenge.difficulty === "Pro" ? "destructive" : challenge.difficulty === "Intermediate" ? "default" : "secondary"}>
+                          {challenge.difficulty}
+                        </Badge>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4 text-blue-600" />
-                        <span>{challenge.deadline}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Users className="h-4 w-4 text-purple-600" />
-                        <span>{challenge.participants} Teilnehmer</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Eye className="h-4 w-4 text-orange-600" />
-                        <span>{challenge.engagement}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Badge variant="outline">{challenge.category}</Badge>
-                      <Badge variant={challenge.difficulty === "Pro" ? "destructive" : challenge.difficulty === "Intermediate" ? "default" : "secondary"}>
-                        {challenge.difficulty}
-                      </Badge>
-                    </div>
-                    <Button 
-                      className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
-                      onClick={() => handleJoinChallenge(challenge.id)}
-                    >
-                      <Play className="h-4 w-4 mr-2" />
-                      Challenge beitreten
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+                      <Button 
+                        className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
+                        onClick={() => handleJoinChallenge(challenge.id)}
+                      >
+                        <Play className="h-4 w-4 mr-2" />
+                        Challenge beitreten
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </TabsContent>
 
