@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -149,26 +148,6 @@ const Index = () => {
                 </Button>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Stats Section */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-16">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-white">2.5M+</div>
-              <div className="text-purple-200">Creator</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-white">850+</div>
-              <div className="text-purple-200">Unternehmen</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-white">€1.2M</div>
-              <div className="text-purple-200">Ausgezahlt</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-white">15K+</div>
-              <div className="text-purple-200">Challenges</div>
-            </div>
           </div>
         </div>
       </div>
